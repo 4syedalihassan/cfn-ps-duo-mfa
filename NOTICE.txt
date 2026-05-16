@@ -1,7 +1,10 @@
-Copyright 2016-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+Cisco Duo MFA for AWS Directory Service — Community Fork
+Copyright 2024 Amazon Web Services, Inc. and Duo Security
 
-Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with the License. A copy of the License is located at
+Original work licensed under Apache License 2.0.
+This fork maintained independently. See LICENSE for details.
 
-    http://aws.amazon.com/apache2.0/
-
-or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+Changes from original:
+- Base image: Ubuntu 22.04 (ECR Public)
+- CVE-2026-27459 remediated: pyOpenSSL upgraded to 26.0.0
+- Source: Migrated from CodeCommit to GitHub
