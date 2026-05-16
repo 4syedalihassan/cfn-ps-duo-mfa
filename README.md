@@ -58,14 +58,13 @@ The original AWS Quick Start was deprecated in Q4 2024. AWS stopped maintaining 
 
 | Parameter | Value |
 |-----------|-------|
-| `GitHubOwner` | Your GitHub username |
 | `GitHubRepo` | `cfn-ps-duo-mfa` |
 | `GitHubBranch` | `main` |
 | `GitHubConnectionArn` | ARN from step 2 |
 | `DuoIntegrationKey` | From Duo admin console |
 | `DuoSecretKey` | From Duo admin console |
 | `DuoApiHostName` | From Duo admin console |
-| `DirectoryServiceId` | e.g. `d-9067e367c4` |
+| `DirectoryServiceId` | e.g. `d-xxxxxxxxxx` |
 | `DirectoryServiceType` | `AD Connector` or `Managed AD` |
 | `NotificationEmail` | Admin email for alerts |
 
