@@ -854,6 +854,7 @@ p.footer-text a{color:#d7d8d8}
 <div id="toc" class="toc2">
 <div id="toctitle"></div>
 <ul class="sectlevel1">
+<li><a href="#_fork_notice">Community Fork Notice</a></li>
 <li><a href="#_overview">Overview</a>
 <ul class="sectlevel2">
 <li><a href="#_security">Security</a></li>
@@ -900,7 +901,7 @@ p.footer-text a{color:#d7d8d8}
 </div>
 </div>
 <div class="paragraph text-center">
-<p><strong>June 2022</strong><br>
+<p><strong>May 2026</strong><br>
 <em>Nagmesh Kumar, AWS Professional Services team</em><br>
 <em>Dave May, Troy Ameigh, &amp; Troy Lindsay, AWS Integration &amp; Automation team</em><br></p>
 </div>
@@ -916,7 +917,7 @@ p.footer-text a{color:#d7d8d8}
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-Refer to the <a href="https://github.com/aws-ia/cfn-ps-duo-mfa" target="_blank" rel="noopener">GitHub repository</a> to view source files, report bugs, submit feature ideas, and post feedback about this Partner Solution. To comment on the documentation, refer to <a href="#_feedback">Feedback</a>.
+Refer to the <a href="https://github.com/4syedalihassan/cfn-ps-duo-mfa" target="_blank" rel="noopener">GitHub repository</a> to view source files, report bugs, submit feature ideas, and post feedback about this Partner Solution. To comment on the documentation, refer to <a href="#_feedback">Feedback</a>.
 </td>
 </tr>
 </table>
@@ -926,11 +927,36 @@ Refer to the <a href="https://github.com/aws-ia/cfn-ps-duo-mfa" target="_blank" 
 </div>
 </div>
 </div>
+
+<div class="sect1">
+<h2 id="_fork_notice">Community Fork Notice</h2>
+<div class="sectionbody">
+<div class="admonitionblock warning">
+<table><tr>
+<td class="icon"><i class="fa icon-warning" title="Warning"></i></td>
+<td class="content">
+This is a community-maintained fork of the deprecated <a href="https://github.com/aws-ia/cfn-ps-duo-mfa" target="_blank" rel="noopener">aws-ia/cfn-ps-duo-mfa</a> Quick Start, which was archived by AWS in Q4 2024. The original S3 assets and CodeCommit source are no longer maintained.
+</td>
+</tr></table>
+</div>
+<div class="paragraph"><p>This fork addresses the following issues:</p></div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup>
+<thead><tr><th class="tableblock halign-left valign-top">Component</th><th class="tableblock halign-left valign-top">Original</th><th class="tableblock halign-left valign-top">This Fork</th></tr></thead>
+<tbody>
+<tr><td class="tableblock halign-left valign-top"><p class="tableblock">Base image</p></td><td class="tableblock halign-left valign-top"><p class="tableblock"><code>amazonlinux:latest</code> (Docker Hub — rate limited)</p></td><td class="tableblock halign-left valign-top"><p class="tableblock"><code>public.ecr.aws/ubuntu/ubuntu:22.04</code> (ECR Public)</p></td></tr>
+<tr><td class="tableblock halign-left valign-top"><p class="tableblock">CVE-2026-27459</p></td><td class="tableblock halign-left valign-top"><p class="tableblock">CRITICAL — pyOpenSSL unpatched</p></td><td class="tableblock halign-left valign-top"><p class="tableblock">Fixed — pyOpenSSL upgraded to 26.0.0</p></td></tr>
+<tr><td class="tableblock halign-left valign-top"><p class="tableblock">Source control</p></td><td class="tableblock halign-left valign-top"><p class="tableblock">AWS CodeCommit (deprecated by AWS)</p></td><td class="tableblock halign-left valign-top"><p class="tableblock">GitHub via AWS CodeConnections</p></td></tr>
+<tr><td class="tableblock halign-left valign-top"><p class="tableblock">Maintained</p></td><td class="tableblock halign-left valign-top"><p class="tableblock">No — archived Q4 2024</p></td><td class="tableblock halign-left valign-top"><p class="tableblock">Yes — community maintained</p></td></tr>
+</tbody>
+</table>
+</div>
+</div>
 <div class="sect1">
 <h2 id="_overview">Overview</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This Partner Solution deploys Cisco Duo MFA to the AWS Cloud. If you are unfamiliar with AWS Partner Solutions, refer to the <a href="https://fwd.aws/rA69w?" target="_blank" rel="noopener">AWS Partner Solution General Information Guide</a>.</p>
+<p>This solution deploys Cisco Duo MFA to the AWS Cloud using a community-maintained fork. If you are unfamiliar with AWS Partner Solutions, refer to the <a href="https://fwd.aws/rA69w?" target="_blank" rel="noopener">AWS Partner Solution General Information Guide</a>.</p>
 </div>
 <div class="sect2">
 <h3 id="_security">Security</h3>
@@ -942,6 +968,18 @@ Refer to the <a href="https://github.com/aws-ia/cfn-ps-duo-mfa" target="_blank" 
 </td>
 <td class="content">
 On May 26, 2022, Duo released version 5.7.1 of the Duo Authentication Proxy. This includes patches for two vulnerabilities that are described in the following points.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<strong>CVE-2026-27459 (CRITICAL) — Fixed in this fork.</strong> pyOpenSSL versions 22.0.0–25.x.x contain a buffer overflow vulnerability in DTLS cookie callbacks. This fork upgrades pyOpenSSL to 26.0.0 inside the Duo Authentication Proxy bundled Python environment to remediate this CVE. For more information, refer to <a href="https://nvd.nist.gov/vuln/detail/CVE-2026-27459" target="_blank" rel="noopener">CVE-2026-27459 Detail</a>.
 </td>
 </tr>
 </table>
@@ -1056,7 +1094,7 @@ best practices, to provide you with your own virtual network on AWS.*</p>
 <div class="ulist">
 <ul>
 <li>
-<p>AWS CodePipeline to retrieve the latest code from AWS CodeCommit in response to an Amazon CloudWatch event once a week. You can change this frequency in the AWS CloudFormation parameter <code>EcrCronExpression</code> when you create or update the stack.</p>
+<p>AWS CodePipeline to retrieve the latest code from <strong>GitHub</strong> (via AWS CodeConnections) in response to a push or a weekly CloudWatch event. You can change this frequency in the AWS CloudFormation parameter <code>EcrCronExpression</code> when you create or update the stack.</p>
 </li>
 <li>
 <p>AWS CodeBuild, which CodePipeline uses to build a new container image. CodePipeline then uploads the new container image to Amazon Elastic Container Registry (Amazon ECR).</p>
@@ -1118,10 +1156,10 @@ best practices, to provide you with your own virtual network on AWS.*</p>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://fwd.aws/nXE9E?" target="_blank" rel="noopener">Deploy Duo MFA into a new VPC</a>. This option builds a new AWS environment that consists of the VPC, subnets, NAT gateways, security groups, bastion hosts, and other infrastructure components. It then deploys Duo MFA into this new VPC.</p>
+<p><a href="https://github.com/4syedalihassan/cfn-ps-duo-mfa/blob/main/templates/duo-proxy-fargate-main.template.yaml" target="_blank" rel="noopener">Deploy Duo MFA into a new VPC</a>. This option builds a new AWS environment that consists of the VPC, subnets, NAT gateways, security groups, bastion hosts, and other infrastructure components. It then deploys Duo MFA into this new VPC.</p>
 </li>
 <li>
-<p><a href="https://fwd.aws/qAMMk?" target="_blank" rel="noopener">Deploy Duo MFA into an existing VPC</a>. This option provisions Duo MFA in your existing AWS infrastructure.</p>
+<p><a href="https://github.com/4syedalihassan/cfn-ps-duo-mfa/blob/main/templates/duo-proxy-fargate.template.yaml" target="_blank" rel="noopener">Deploy Duo MFA into an existing VPC</a>. This option provisions Duo MFA in your existing AWS infrastructure.</p>
 </li>
 </ul>
 </div>
@@ -1238,7 +1276,7 @@ best practices, to provide you with your own virtual network on AWS.*</p>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Unless you&#8217;re customizing the Partner Solution templates or are instructed otherwise in this guide&#8217;s <strong>Predeployment</strong> section, don&#8217;t change the default settings for the following parameters: <code>QSS3BucketName</code>, <code>QSS3BucketRegion</code>, and <code>QSS3KeyPrefix</code>. Changing the values of these parameters will modify code references that point to the Amazon Simple Storage Service (Amazon S3) bucket name and key prefix. For more information, refer to the <a href="https://fwd.aws/NwqYA?" target="_blank" rel="noopener">AWS Partner Solutions Contributor&#8217;s Guide</a>.
+Unless you&#8217;re customizing the Partner Solution templates or are instructed otherwise in this guide&#8217;s <strong>Predeployment</strong> section, Provide values for <code>GitHubOwner</code>, <code>GitHubRepo</code>, <code>GitHubBranch</code>, and <code>GitHubConnectionArn</code> parameters to point to your forked repository and CodeConnections connection.
 </td>
 </tr>
 </table>
@@ -1540,22 +1578,11 @@ Unless you&#8217;re customizing the Partner Solution templates or are instructed
 <h2 id="_feedback">Feedback</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To submit feature ideas and report bugs, use the <strong>Issues</strong> section of the <a href="https://github.com/aws-ia/cfn-ps-duo-mfa" target="_blank" rel="noopener">GitHub repository</a> for this Partner Solution. To submit code, refer to the <a href="https://fwd.aws/NwqYA?" target="_blank" rel="noopener">Partner Solution Contributor&#8217;s Guide</a>. To submit feedback on this deployment guide, use the following GitHub links:</p>
+<p>To submit feature ideas and report bugs, use the <strong>Issues</strong> section of the <a href="https://github.com/4syedalihassan/cfn-ps-duo-mfa" target="_blank" rel="noopener">GitHub repository</a> for this fork.</p>
 </div>
 <div class="ulist">
 <ul>
-<li>
-<p><a href="https://github.com/aws-ia/cfn-ps-duo-mfa/issues/new?labels=documentation,grammar+or+spelling&amp;title=Deployment+guide+feedback&amp;body=Section+heading:%0ADocumentation+issue+description:%0A" target="_blank" rel="noopener">Grammar or spelling</a></p>
-</li>
-<li>
-<p><a href="https://github.com/aws-ia/cfn-ps-duo-mfa/issues/new?labels=documentation,broken+link&amp;title=Deployment+guide+feedback&amp;body=Section+heading:%0ADocumentation+issue+description:%0A" target="_blank" rel="noopener">Broken link</a></p>
-</li>
-<li>
-<p><a href="https://github.com/aws-ia/cfn-ps-duo-mfa/issues/new?labels=documentation,inaccurate+content&amp;title=Deployment+guide+feedback&amp;body=Section+heading:%0ADocumentation+issue+description:%0A" target="_blank" rel="noopener">Inaccurate content</a></p>
-</li>
-<li>
-<p><a href="https://github.com/aws-ia/cfn-ps-duo-mfa/issues/new?labels=documentation,display+and+design&amp;title=Deployment+guide+feedback&amp;body=Section+heading:%0ADocumentation+issue+description:%0A" target="_blank" rel="noopener">Display or design</a></p>
-</li>
+<li><p><a href="https://github.com/4syedalihassan/cfn-ps-duo-mfa/issues/new" target="_blank" rel="noopener">Open an issue on GitHub</a></p></li>
 </ul>
 </div>
 </div>
@@ -1577,7 +1604,7 @@ Unless you&#8217;re customizing the Partner Solution templates or are instructed
         <!-- We can use document attributes: -->
         <!-- Generated with Asciidoctor v2.0.16. -->
         <a href="https://aws.amazon.com/privacy/">Privacy</a> | <a href="https://aws.amazon.com/terms/">Site terms</a> |
-        &copy; 2024, Amazon Web Services, Inc. or its affiliates and Duo Security (a wholly owned subsidiary of Cisco). All rights reserved.
+        &copy; 2024, Amazon Web Servicescopy; 2026, Amazon Web Services, Inc. or its affiliates and Duo Security (a wholly owned subsidiary of Cisco). All rights reserved.
     </p>
 </footer>
 </body>
