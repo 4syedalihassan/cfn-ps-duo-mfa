@@ -7,4 +7,4 @@ This fork maintained independently. See LICENSE for details.
 Changes from original:
 - Base image: Amazon Linux 2023 (ECR Public)
 - CVE-2026-27459 remediated: pyOpenSSL upgraded to 26.0.0
-- Source: Migrated from CodeCommit to GitHub
+- Source control: CodeCommit repository and branch are configurable via stack parameters
