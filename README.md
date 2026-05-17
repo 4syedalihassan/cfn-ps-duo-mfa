@@ -13,7 +13,7 @@ The original AWS Quick Start was deprecated in Q4 2024. AWS stopped maintaining 
 | Runtime base image | `amazonlinux:latest` (Docker Hub, rate-limited) → `public.ecr.aws/amazonlinux/amazonlinux:2023` (ECR Public) |
 | Automation base images | `public.ecr.aws/codebuild/amazonlinux2-x86_64-standard:4.0` → `public.ecr.aws/codebuild/amazonlinux2-x86_64-standard:5.0` |
 | CVE-2026-27459 | pyOpenSSL upgraded to 26.0.0 inside Duo's bundled Python |
-| Source control | CodeCommit repository and branch are configurable via stack parameters |
+| Source control | CodeCommit (deprecated by AWS) → GitHub via AWS CodeConnections |
 | buildspec.yaml | Removed `cd docker/` — pipeline now builds from `scripts/source` root |
 | run_duo.sh | Windows line endings cleaned, original Duo logic preserved |
 | CF template | Updated parameters, pipeline source, IAM permissions |
@@ -42,24 +42,27 @@ The original AWS Quick Start was deprecated in Q4 2024. AWS stopped maintaining 
 
 1. AWS account with Directory Service (AD Connector or Managed AD)
 2. Duo account with RADIUS application configured
-3. Access to AWS CodeCommit
+3. GitHub account
 
 ### Steps
 
-**1. Review or update pipeline source parameters**
+**1. Fork this repo to your GitHub account**
 
-The default template provisions and uses CodeCommit as the pipeline source. You can set:
-- `CodeCommitRepoName`
-- `CodeCommitBranchName`
+**2. Create AWS CodeConnections connection**
+- AWS Console → Developer Tools → Connections → Create connection
+- Select GitHub → Authorize → Save
+- Copy the Connection ARN
 
-**2. Deploy CloudFormation stack**
+**3. Deploy CloudFormation stack**
 - Upload `templates/duo-proxy-fargate-main.template.yaml`
 - Fill in parameters:
 
 | Parameter | Value |
 |-----------|-------|
-| `CodeCommitRepoName` | `duo-authproxy` (or your repo name) |
-| `CodeCommitBranchName` | `ecr` (or your branch name) |
+| `GitHubOwner` | GitHub owner/user for your fork |
+| `GitHubRepo` | `cfn-ps-duo-mfa` |
+| `GitHubBranch` | `main` |
+| `GitHubConnectionArn` | ARN from step 2 |
 | `DuoIntegrationKey` | From Duo admin console |
 | `DuoSecretKey` | From Duo admin console |
 | `DuoApiHostName` | From Duo admin console |
@@ -67,7 +70,7 @@ The default template provisions and uses CodeCommit as the pipeline source. You 
 | `DirectoryServiceType` | `AD Connector` or `Managed AD` |
 | `NotificationEmail` | Admin email for alerts |
 
-**3. Verify deployment**
+**4. Verify deployment**
 - CloudFormation → stack → `CREATE_COMPLETE`
 - Directory Service console → your directory → Networking & security → MFA status = `Completed`
 - WorkSpaces login → MFA prompt should appear
@@ -82,7 +85,7 @@ The default template provisions and uses CodeCommit as the pipeline source. You 
 
 ## Updating
 
-Push to the configured `CodeCommitBranchName` branch → CodePipeline auto-triggers → new image built and scanned → ECS auto-deploys.
+Push to the configured `GitHubBranch` branch → CodePipeline auto-triggers → new image built and scanned → ECS auto-deploys.
 
 Weekly rebuild also runs every Saturday to pick up base image patches.
 

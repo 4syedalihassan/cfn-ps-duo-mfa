@@ -39,10 +39,12 @@ Metadata:
           - EcrImageRetention
           - EcrRepoName
       - Label:
-          default: CodeCommit configuration
+          default: GitHub source configuration
         Parameters:
-          - CodeCommitRepoName
-          - CodeCommitBranchName
+          - GitHubOwner
+          - GitHubRepo
+          - GitHubBranch
+          - GitHubConnectionArn
       - Label:
           default: CodePipeline configuration
         Parameters:
@@ -64,10 +66,14 @@ Metadata:
         default: ECR repo name
       EcrImageRetention:
         default: ECR retention period
-      CodeCommitRepoName:
-        default: CodeCommit repo name
-      CodeCommitBranchName:
-        default: CodeCommit branch name
+      GitHubOwner:
+        default: GitHub owner
+      GitHubRepo:
+        default: GitHub repository
+      GitHubBranch:
+        default: GitHub branch
+      GitHubConnectionArn:
+        default: CodeConnections connection ARN
       EcrCronExpression:
         default: ECR rebuild cron expression
       NotificationEmail:
@@ -132,16 +138,24 @@ Parameters:
     Default: 30
     MinValue: 30
     MaxValue: 600
-  CodeCommitRepoName:
+  GitHubOwner:
     Type: String
-    Description: Name of the CodeCommit repo that which will manage all the code base.
-    Default: duo-authproxy
-    AllowedPattern: ^[0-9a-zA-Z-/]*$
-  CodeCommitBranchName:
+    Description: GitHub organization or user name that owns the repository used as the CodePipeline source.
+    AllowedPattern: ^[A-Za-z0-9](?:-?[A-Za-z0-9]){0,38}$
+  GitHubRepo:
     Type: String
-    Description: Name of the CodeCommit branch where all the code base is located. This branch starts actions in CodePipeline.
-    Default: ecr
-    AllowedPattern: ^[0-9a-zA-Z-/]*$
+    Description: GitHub repository name used as the CodePipeline source.
+    Default: cfn-ps-duo-mfa
+    AllowedPattern: ^[A-Za-z0-9_.-]+$
+  GitHubBranch:
+    Type: String
+    Description: GitHub branch name used as the CodePipeline source.
+    Default: main
+    AllowedPattern: ^[0-9A-Za-z._/-]+$
+  GitHubConnectionArn:
+    Type: String
+    Description: AWS CodeConnections connection ARN for GitHub (for example, arn:aws:codeconnections:region:account-id:connection/connection-id).
+    AllowedPattern: ^arn:[A-Za-z0-9-]+:codeconnections:[A-Za-z0-9-]+:[0-9]{12}:connection/[A-Za-z0-9-]+$
   EcrCronExpression:
     Type: String
     Description: Cron expression trigger. By default, it's set at 0000 UTC every Saturday. See https://docs.aws.amazon.com/eventbridge/latest/userguide/scheduled-events.html.
@@ -1080,21 +1094,6 @@ Resources:
             - EIAMPolicyWildcardResource
           ignore_reasons:
             - EIAMPolicyWildcardResource: Intent assumed for initial migration.
-  DuoEcrCodeCommitRepo:
-    Type: AWS::CodeCommit::Repository
-    DependsOn: DuoCleanupCustomResource
-    Properties:
-      RepositoryName:
-        Ref: CodeCommitRepoName
-      RepositoryDescription: CodeCommit Repo with code for building DuoAuthentication Proxy ECR images
-      Code:
-        BranchName:
-          Ref: CodeCommitBranchName
-        S3:
-          Bucket:
-            Ref: ArtifactBucket
-          Key:
-            Fn::Sub: ${QSS3KeyPrefix}scripts/packages/code_commit.zip
   DuoCodePipelineRole:
     Type: AWS::IAM::Role
     Properties:
@@ -1107,9 +1106,18 @@ Resources:
           Action: sts:AssumeRole
       Path: /
       ManagedPolicyArns:
-        - Fn::Sub: arn:${AWS::Partition}:iam::aws:policy/AWSCodeCommitReadOnly
         - Ref: DuoCodeBuildPolicy
         - Ref: DuoKmsIamPolicy
+      Policies:
+        - PolicyName: UseCodeConnections
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - codestar-connections:UseConnection
+                Resource:
+                  - Ref: GitHubConnectionArn
   DuoCodeBuildPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
@@ -1124,13 +1132,6 @@ Resources:
             Effect: Allow
             Resource:
               - Fn::Sub: arn:${AWS::Partition}:codebuild:${AWS::Region}:${AWS::AccountId}:project/${AWS::StackName}
-          - Action:
-              - codecommit:UploadArchive
-            Effect: Allow
-            Resource:
-              - Fn::GetAtt:
-                  - DuoEcrCodeCommitRepo
-                  - Arn
           - Action:
               - s3:GetObject
               - s3:PutObject
@@ -1261,16 +1262,16 @@ Resources:
             - ActionTypeId:
                 Category: Source
                 Owner: AWS
-                Provider: CodeCommit
+                Provider: CodeStarSourceConnection
                 Version: '1'
               Configuration:
+                ConnectionArn:
+                  Ref: GitHubConnectionArn
                 BranchName:
-                  Ref: CodeCommitBranchName
-                PollForSourceChanges: 'false'
-                RepositoryName:
-                  Fn::GetAtt:
-                    - DuoEcrCodeCommitRepo
-                    - Name
+                  Ref: GitHubBranch
+                FullRepositoryId:
+                  Fn::Sub: ${GitHubOwner}/${GitHubRepo}
+                DetectChanges: 'true'
               Name: SourceAction
               OutputArtifacts:
                 - Name: AppSource
@@ -1311,36 +1312,6 @@ Resources:
                   Fn::Sub: arn:${AWS::Partition}:codepipeline:${AWS::Region}:${AWS::AccountId}:${DuoEcrPipeline}
             Version: 2012-10-17
           PolicyName: duo-ecr-pipeline-trigger
-  DuoEcrPipelineCloudWatchEventRule:
-    Type: AWS::Events::Rule
-    Properties:
-      Description:
-        Fn::Sub: Amazon CloudWatch Rule which triggers the build for DuoAuthProxy ECR when the branch ${CodeCommitBranchName} is updated
-      EventPattern:
-        detail:
-          event:
-            - referenceCreated
-            - referenceUpdated
-          referenceName:
-            - Ref: CodeCommitBranchName
-          referenceType:
-            - branch
-        detail-type:
-          - CodeCommit Repository State Change
-        resources:
-          - Fn::GetAtt:
-              - DuoEcrCodeCommitRepo
-              - Arn
-        source:
-          - aws.codecommit
-      Targets:
-        - Arn:
-            Fn::Sub: arn:${AWS::Partition}:codepipeline:${AWS::Region}:${AWS::AccountId}:${DuoEcrPipeline}
-          Id: DuoEcrPipeline
-          RoleArn:
-            Fn::GetAtt:
-              - DuoEcrPipelineCloudWatchEventRole
-              - Arn
   DuoEcrPipelineWeeklyTrigger:
     Type: AWS::Events::Rule
     Properties:
@@ -1702,8 +1673,7 @@ Resources:
         Ref: QSS3KeyPrefix
       SourceRegion:
         Ref: QSS3BucketRegion
-      Objects:
-        - scripts/packages/code_commit.zip
+      Objects: []
 Outputs:
   DuoRadiusProxyVpc:
     Value:
@@ -1751,10 +1721,6 @@ Outputs:
     Value:
       Ref: DuoCustomResourceEvent
     Description: CloudWatch event for CodePipeline status for Custom Resource
-  DuoEcrCodeCommitRepo:
-    Value:
-      Ref: DuoEcrCodeCommitRepo
-    Description: CodeCommit repo for Duo AuthProxy
   DuoEcrPipeline:
     Value:
       Ref: DuoEcrPipeline
@@ -1762,11 +1728,7 @@ Outputs:
   DuoEcrPipelineCloudWatchEventRole:
     Value:
       Ref: DuoEcrPipelineCloudWatchEventRole
-    Description: IAM role to trigger CodePipeline based on CodeCommit
-  DuoEcrPipelineCloudWatchEventRule:
-    Value:
-      Ref: DuoEcrPipelineCloudWatchEventRule
-    Description: Event based trigger on CodePipeline
+    Description: IAM role to trigger CodePipeline from EventBridge schedules
   DuoEcrPipelineEvents:
     Value:
       Ref: DuoEcrPipelineEvents
