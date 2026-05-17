@@ -54,9 +54,16 @@ The original AWS Quick Start was deprecated in Q4 2024. AWS stopped maintaining 
 - Copy the Connection ARN
 
 **3. Deploy CloudFormation stack**
-- Deploy the CloudFormation template that matches your scenario.
-- If you are deploying `templates/duo-proxy-fargate-main.template.yaml`, provide the AD/VPC parameters requested by that main template in the CloudFormation console.
-- If you are deploying the existing-directory/Fargate-only template, use the parameters below:
+
+**For new Active Directory:**
+- Deploy `templates/quickstart-duo-mfa-main.template.yaml`
+- This creates a new VPC, AWS Managed Active Directory, and Fargate deployment
+- Provide the AD/VPC parameters requested by that template
+
+**For existing Active Directory:**
+- Deploy `templates/duo-proxy-fargate.template.yaml`
+- This uses your existing Directory Service (AD Connector or Managed AD)
+- Use the parameters below:
 
 | Parameter | Value |
 |-----------|-------|
