@@ -1672,7 +1672,7 @@ Resources:
         Ref: QSS3KeyPrefix
       SourceRegion:
         Ref: QSS3BucketRegion
-      # Keep this custom resource for cleanup on stack delete; no bootstrap artifacts are copied at create time.
+      # Custom resource is retained for cleanup on stack delete; create-time bootstrap copy is intentionally disabled.
       Objects: []
 Outputs:
   DuoRadiusProxyVpc:
