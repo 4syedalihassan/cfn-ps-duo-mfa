@@ -54,8 +54,9 @@ The original AWS Quick Start was deprecated in Q4 2024. AWS stopped maintaining 
 - Copy the Connection ARN
 
 **3. Deploy CloudFormation stack**
-- Upload `templates/duo-proxy-fargate-main.template.yaml`
-- Fill in parameters:
+- Deploy the CloudFormation template that matches your scenario.
+- If you are deploying `templates/duo-proxy-fargate-main.template.yaml`, provide the AD/VPC parameters requested by that main template in the CloudFormation console.
+- If you are deploying the existing-directory/Fargate-only template, use the parameters below:
 
 | Parameter | Value |
 |-----------|-------|
