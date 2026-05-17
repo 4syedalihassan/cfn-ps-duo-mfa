@@ -2,7 +2,7 @@ version: 0.2
 phases:
   build:
     commands:
-      - docker build -t ${ECR_REPO_NAME} .
+      - docker build -t ${ECR_REPO_NAME} -f scripts/source/docker/Dockerfile scripts/source/docker
       - DATE_TAG=$(date +'%Y-%b-%d')
       - REPO_TAG=$DATE_TAG.$CODEBUILD_RESOLVED_SOURCE_VERSION
   post_build:

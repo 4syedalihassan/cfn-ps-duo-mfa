@@ -1240,7 +1240,7 @@ Resources:
           - DuoCodeBuildRole
           - Arn
       Source:
-        BuildSpec: buildspec.yaml
+        BuildSpec: scripts/source/buildspec.yaml
         Type: CODEPIPELINE
       TimeoutInMinutes: 480
   DuoEcrPipeline:
