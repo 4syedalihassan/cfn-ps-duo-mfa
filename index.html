@@ -946,7 +946,7 @@ This is a community-maintained fork of the deprecated <a href="https://github.co
 <tbody>
 <tr><td class="tableblock halign-left valign-top"><p class="tableblock">Base image</p></td><td class="tableblock halign-left valign-top"><p class="tableblock"><code>amazonlinux:latest</code> (Docker Hub — rate limited)</p></td><td class="tableblock halign-left valign-top"><p class="tableblock"><code>public.ecr.aws/amazonlinux/amazonlinux:2023</code> (ECR Public)</p></td></tr>
 <tr><td class="tableblock halign-left valign-top"><p class="tableblock">CVE-2026-27459</p></td><td class="tableblock halign-left valign-top"><p class="tableblock">CRITICAL — pyOpenSSL unpatched</p></td><td class="tableblock halign-left valign-top"><p class="tableblock">Fixed — pyOpenSSL upgraded to 26.0.0</p></td></tr>
-<tr><td class="tableblock halign-left valign-top"><p class="tableblock">Source control</p></td><td class="tableblock halign-left valign-top"><p class="tableblock">AWS CodeCommit (deprecated by AWS)</p></td><td class="tableblock halign-left valign-top"><p class="tableblock">GitHub via AWS CodeConnections</p></td></tr>
+<tr><td class="tableblock halign-left valign-top"><p class="tableblock">Source control</p></td><td class="tableblock halign-left valign-top"><p class="tableblock">AWS CodeCommit (legacy implementation)</p></td><td class="tableblock halign-left valign-top"><p class="tableblock">AWS CodeCommit (configurable repo and branch parameters)</p></td></tr>
 <tr><td class="tableblock halign-left valign-top"><p class="tableblock">Maintained</p></td><td class="tableblock halign-left valign-top"><p class="tableblock">No — archived Q4 2024</p></td><td class="tableblock halign-left valign-top"><p class="tableblock">Yes — community maintained</p></td></tr>
 </tbody>
 </table>
@@ -1094,7 +1094,7 @@ best practices, to provide you with your own virtual network on AWS.*</p>
 <div class="ulist">
 <ul>
 <li>
-<p>AWS CodePipeline to retrieve the latest code from <strong>GitHub</strong> (via AWS CodeConnections) in response to a push or a weekly CloudWatch event. You can change this frequency in the AWS CloudFormation parameter <code>EcrCronExpression</code> when you create or update the stack.</p>
+<p>AWS CodePipeline to retrieve the latest code from AWS CodeCommit in response to branch updates and a weekly Amazon EventBridge schedule. You can change this frequency in the AWS CloudFormation parameter <code>EcrCronExpression</code> when you create or update the stack.</p>
 </li>
 <li>
 <p>AWS CodeBuild, which CodePipeline uses to build a new container image. CodePipeline then uploads the new container image to Amazon Elastic Container Registry (Amazon ECR).</p>
@@ -1276,7 +1276,7 @@ best practices, to provide you with your own virtual network on AWS.*</p>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Unless you&#8217;re customizing the Partner Solution templates or are instructed otherwise in this guide&#8217;s <strong>Predeployment</strong> section, Provide values for <code>GitHubOwner</code>, <code>GitHubRepo</code>, <code>GitHubBranch</code>, and <code>GitHubConnectionArn</code> parameters to point to your forked repository and CodeConnections connection.
+Unless you&#8217;re customizing the Partner Solution templates or are instructed otherwise in this guide&#8217;s <strong>Predeployment</strong> section, provide values for <code>CodeCommitRepoName</code> and <code>CodeCommitBranchName</code> parameters to point to the repository and branch used by your pipeline.
 </td>
 </tr>
 </table>
