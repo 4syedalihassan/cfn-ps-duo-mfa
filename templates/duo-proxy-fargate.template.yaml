@@ -1672,7 +1672,8 @@ Resources:
         Ref: QSS3KeyPrefix
       SourceRegion:
         Ref: QSS3BucketRegion
-      # Custom resource is retained for cleanup on stack delete; create-time bootstrap copy is intentionally disabled.
+      # This was previously populated with scripts/packages/code_commit.zip for CodeCommit bootstrap.
+      # CodeCommit bootstrap was removed, so the list is intentionally empty and this resource is retained for delete-time cleanup.
       Objects: []
 Outputs:
   DuoRadiusProxyVpc:
