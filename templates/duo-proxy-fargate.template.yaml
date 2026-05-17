@@ -1673,8 +1673,7 @@ Resources:
         Ref: QSS3KeyPrefix
       SourceRegion:
         Ref: QSS3BucketRegion
-      Objects:
-        - scripts/packages/code_commit.zip
+      Objects: []
 Outputs:
   DuoRadiusProxyVpc:
     Value:
