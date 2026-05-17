@@ -10,10 +10,11 @@ The original AWS Quick Start was deprecated in Q4 2024. AWS stopped maintaining 
 
 | Component | Change |
 |-----------|--------|
-| Base image | `amazonlinux:latest` (Docker Hub, rate-limited) → `public.ecr.aws/ubuntu/ubuntu:22.04` (ECR Public) |
+| Runtime base image | `amazonlinux:latest` (Docker Hub, rate-limited) → `public.ecr.aws/ubuntu/ubuntu:24.04` (ECR Public) |
+| Automation base images | `public.ecr.aws/codebuild/amazonlinux2-x86_64-standard:4.0` → `public.ecr.aws/codebuild/amazonlinux2-x86_64-standard:5.0` |
 | CVE-2026-27459 | pyOpenSSL upgraded to 26.0.0 inside Duo's bundled Python |
 | Source control | CodeCommit (deprecated) → GitHub via AWS CodeConnections |
-| buildspec.yaml | Removed `cd docker/` — files now at repo root |
+| buildspec.yaml | Removed `cd docker/` — pipeline now builds from `scripts/source` root |
 | run_duo.sh | Windows line endings cleaned, original Duo logic preserved |
 | CF template | Updated parameters, pipeline source, IAM permissions |
 
@@ -28,9 +29,9 @@ The original AWS Quick Start was deprecated in Q4 2024. AWS stopped maintaining 
 ## Repository structure
 
 ```
-├── Dockerfile          # Ubuntu 22.04, Duo authproxy, CVE fix
-├── run_duo.sh          # Reads DuoSecret env var, writes authproxy.cfg
-├── buildspec.yaml      # CodeBuild pipeline — build, scan, push to ECR
+├── scripts/source/docker/Dockerfile   # Ubuntu 24.04, Duo authproxy, CVE fix
+├── scripts/source/docker/run_duo.sh   # Reads DuoSecret env var, writes authproxy.cfg
+├── scripts/source/buildspec.yaml      # CodeBuild pipeline — build, scan, push to ECR
 └── templates/
     └── duo-proxy-fargate.template.yaml   # Main CFN template
 ```

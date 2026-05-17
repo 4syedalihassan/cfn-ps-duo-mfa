@@ -5,6 +5,6 @@ Original work licensed under Apache License 2.0.
 This fork maintained independently. See LICENSE for details.
 
 Changes from original:
-- Base image: Ubuntu 22.04 (ECR Public)
+- Base image: Ubuntu 24.04 (ECR Public)
 - CVE-2026-27459 remediated: pyOpenSSL upgraded to 26.0.0
 - Source: Migrated from CodeCommit to GitHub
