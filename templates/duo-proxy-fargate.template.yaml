@@ -1271,7 +1271,6 @@ Resources:
                   Ref: GitHubBranch
                 FullRepositoryId:
                   Fn::Sub: ${GitHubOwner}/${GitHubRepo}
-                DetectChanges: true
               Name: SourceAction
               OutputArtifacts:
                 - Name: AppSource
@@ -1673,6 +1672,7 @@ Resources:
         Ref: QSS3KeyPrefix
       SourceRegion:
         Ref: QSS3BucketRegion
+      # Keep this custom resource for cleanup on stack delete; no bootstrap artifacts are copied at create time.
       Objects: []
 Outputs:
   DuoRadiusProxyVpc:
