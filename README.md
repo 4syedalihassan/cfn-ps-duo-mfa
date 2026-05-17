@@ -10,7 +10,7 @@ The original AWS Quick Start was deprecated in Q4 2024. AWS stopped maintaining 
 
 | Component | Change |
 |-----------|--------|
-| Runtime base image | `amazonlinux:latest` (Docker Hub, rate-limited) → `public.ecr.aws/ubuntu/ubuntu:24.04` (ECR Public) |
+| Runtime base image | `amazonlinux:latest` (Docker Hub, rate-limited) → `public.ecr.aws/amazonlinux/amazonlinux:2023` (ECR Public) |
 | Automation base images | `public.ecr.aws/codebuild/amazonlinux2-x86_64-standard:4.0` → `public.ecr.aws/codebuild/amazonlinux2-x86_64-standard:5.0` |
 | CVE-2026-27459 | pyOpenSSL upgraded to 26.0.0 inside Duo's bundled Python |
 | Source control | CodeCommit (deprecated) → GitHub via AWS CodeConnections |
@@ -29,7 +29,7 @@ The original AWS Quick Start was deprecated in Q4 2024. AWS stopped maintaining 
 ## Repository structure
 
 ```
-├── scripts/source/docker/Dockerfile   # Ubuntu 24.04, Duo authproxy, CVE fix
+├── scripts/source/docker/Dockerfile   # Amazon Linux 2023, Duo authproxy, CVE fix
 ├── scripts/source/docker/run_duo.sh   # Reads DuoSecret env var, writes authproxy.cfg
 ├── scripts/source/buildspec.yaml      # CodeBuild pipeline — build, scan, push to ECR
 └── templates/
