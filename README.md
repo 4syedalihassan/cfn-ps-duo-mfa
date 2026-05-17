@@ -59,7 +59,7 @@ The original AWS Quick Start was deprecated in Q4 2024. AWS stopped maintaining 
 
 | Parameter | Value |
 |-----------|-------|
-| `GitHubOwner` | GitHub owner/user for your fork |
+| `GitHubOwner` | GitHub owner/user for your fork (example: `your-github-username`) |
 | `GitHubRepo` | `cfn-ps-duo-mfa` |
 | `GitHubBranch` | `main` |
 | `GitHubConnectionArn` | ARN from step 2 |

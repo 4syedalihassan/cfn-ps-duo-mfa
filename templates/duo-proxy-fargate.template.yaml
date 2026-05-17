@@ -1271,7 +1271,7 @@ Resources:
                   Ref: GitHubBranch
                 FullRepositoryId:
                   Fn::Sub: ${GitHubOwner}/${GitHubRepo}
-                DetectChanges: 'true'
+                DetectChanges: true
               Name: SourceAction
               OutputArtifacts:
                 - Name: AppSource
@@ -1673,7 +1673,8 @@ Resources:
         Ref: QSS3KeyPrefix
       SourceRegion:
         Ref: QSS3BucketRegion
-      Objects: []
+      Objects:
+        - scripts/packages/code_commit.zip
 Outputs:
   DuoRadiusProxyVpc:
     Value:
@@ -1728,7 +1729,7 @@ Outputs:
   DuoEcrPipelineCloudWatchEventRole:
     Value:
       Ref: DuoEcrPipelineCloudWatchEventRole
-    Description: IAM role to trigger CodePipeline from EventBridge schedules
+    Description: IAM role used by the weekly EventBridge trigger for CodePipeline
   DuoEcrPipelineEvents:
     Value:
       Ref: DuoEcrPipelineEvents
