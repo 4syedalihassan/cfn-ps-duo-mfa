@@ -26,6 +26,13 @@ Metadata:
           - RadiusPortNumber
           - DuoFailMode
       - Label:
+          default: GitHub source configuration
+        Parameters:
+          - GitHubOwner
+          - GitHubRepo
+          - GitHubBranch
+          - GitHubConnectionArn
+      - Label:
           default: AWS Quick Start configuration settings
         Parameters:
           - QSS3BucketName
@@ -48,6 +55,14 @@ Metadata:
         default: RADIUS port number
       DuoFailMode:
         default: Duo fail mode
+      GitHubOwner:
+        default: GitHub owner
+      GitHubRepo:
+        default: GitHub repository
+      GitHubBranch:
+        default: GitHub branch
+      GitHubConnectionArn:
+        default: CodeConnections connection ARN
       QSS3BucketName:
         default: Quick Start S3 bucket name
       QSS3BucketRegion:
@@ -97,6 +112,26 @@ Parameters:
       - safe
       - secure
     Default: safe
+  GitHubOwner:
+    Type: String
+    Description: GitHub organization or user name that owns the repository used as the CodePipeline source.
+    Default: ''
+    AllowedPattern: "^$|^[A-Za-z0-9](?:-?[A-Za-z0-9]){0,38}$"
+  GitHubRepo:
+    Type: String
+    Description: GitHub repository name used as the CodePipeline source.
+    Default: cfn-ps-duo-mfa
+    AllowedPattern: "^[A-Za-z0-9_.-]+$"
+  GitHubBranch:
+    Type: String
+    Description: GitHub branch name used as the CodePipeline source.
+    Default: main
+    AllowedPattern: "^[0-9A-Za-z._/-]+$"
+  GitHubConnectionArn:
+    Type: String
+    Description: AWS CodeConnections connection ARN for GitHub (for example, arn:aws:codeconnections:region:account-id:connection/connection-id).
+    Default: ''
+    AllowedPattern: "^$|^arn:[A-Za-z0-9-]+:codeconnections:[A-Za-z0-9-]+:[0-9]{12}:connection/[A-Za-z0-9-]+$"
   QSS3BucketName:
     Description: S3 bucket name for the Quick Start assets.
     AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
