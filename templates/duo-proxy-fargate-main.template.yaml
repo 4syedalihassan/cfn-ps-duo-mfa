@@ -47,10 +47,12 @@ Metadata:
           - EcrImageRetention
           - EcrRepoName
       - Label:
-          default: CodeCommit configuration
+          default: GitHub source configuration
         Parameters:
-          - CodeCommitRepoName
-          - CodeCommitBranchName
+          - GitHubOwner
+          - GitHubRepo
+          - GitHubBranch
+          - GitHubConnectionArn
       - Label:
           default: Quick Start configuration
         Parameters:
@@ -62,10 +64,14 @@ Metadata:
         default: AWS Managed Microsoft AD edition
       AvailabilityZones:
         default: Availability Zones
-      CodeCommitBranchName:
-        default: CodeCommit branch name
-      CodeCommitRepoName:
-        default: CodeCommit repo name
+      GitHubOwner:
+        default: GitHub owner
+      GitHubRepo:
+        default: GitHub repository
+      GitHubBranch:
+        default: GitHub branch
+      GitHubConnectionArn:
+        default: CodeConnections connection ARN
       DomainAdminPassword:
         default: Administrator password
       DomainDNSName:
@@ -122,16 +128,24 @@ Parameters:
     Description:
       Availability Zones to use for the subnets in the VPC. The logical order is preserved. This deployment uses only 2 AZs.
     Type: List<AWS::EC2::AvailabilityZone::Name>
-  CodeCommitBranchName: 
+  GitHubOwner:
     Type: String
-    Description: Name of the CodeCommit branch where all the code base is located. This branch starts actions in CodePipeline.
-    Default: ecr
-    AllowedPattern: "^[0-9a-zA-Z-/]*$"
-  CodeCommitRepoName:
+    Description: GitHub organization or user name that owns the repository used as the CodePipeline source.
+    AllowedPattern: "^[A-Za-z0-9](?:-?[A-Za-z0-9]){0,38}$"
+  GitHubRepo:
     Type: String
-    Description: Name of the CodeCommit repo that will manage all the code base.
-    Default: duo-authproxy
-    AllowedPattern: "^[0-9a-zA-Z-/]*$"
+    Description: GitHub repository name used as the CodePipeline source.
+    Default: cfn-ps-duo-mfa
+    AllowedPattern: "^[A-Za-z0-9_.-]+$"
+  GitHubBranch:
+    Type: String
+    Description: GitHub branch name used as the CodePipeline source.
+    Default: main
+    AllowedPattern: "^[0-9A-Za-z._/-]+$"
+  GitHubConnectionArn:
+    Type: String
+    Description: AWS CodeConnections connection ARN for GitHub (for example, arn:aws:codeconnections:region:account-id:connection/connection-id).
+    AllowedPattern: "^arn:[A-Za-z0-9-]+:codeconnections:[A-Za-z0-9-]+:[0-9]{12}:connection/[A-Za-z0-9-]+$"
   DomainAdminPassword:
     AllowedPattern: (?=^.{6,255}$)((?=.*\d)(?=.*[A-Z])(?=.*[a-z])|(?=.*\d)(?=.*[^A-Za-z0-9])(?=.*[a-z])|(?=.*[^A-Za-z0-9])(?=.*[A-Z])(?=.*[a-z])|(?=.*\d)(?=.*[A-Z])(?=.*[^A-Za-z0-9]))^.*
     Description: Account password for the administrator. Must be at least 8 characters containing letters, numbers, and symbols.
@@ -350,8 +364,10 @@ Resources:
         AdSync: 'no'
         EcrRepoName: !Ref 'EcrRepoName'
         EcrImageRetention: !Ref 'EcrImageRetention'
-        CodeCommitRepoName: !Ref 'CodeCommitRepoName'
-        CodeCommitBranchName: !Ref 'CodeCommitBranchName'
+        GitHubOwner: !Ref 'GitHubOwner'
+        GitHubRepo: !Ref 'GitHubRepo'
+        GitHubBranch: !Ref 'GitHubBranch'
+        GitHubConnectionArn: !Ref 'GitHubConnectionArn'
         DuoIntegrationKey: !Ref 'DuoIntegrationKey'
         DuoSecretKey: !Ref 'DuoSecretKey'
         DuoApiHostName: !Ref 'DuoApiHostName'

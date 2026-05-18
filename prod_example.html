@@ -1056,7 +1056,7 @@ best practices, to provide you with your own virtual network on AWS.*</p>
 <div class="ulist">
 <ul>
 <li>
-<p>AWS CodePipeline to retrieve the latest code from AWS CodeCommit in response to an Amazon CloudWatch event once a week. You can change this frequency in the AWS CloudFormation parameter <code>EcrCronExpression</code> when you create or update the stack.</p>
+<p>AWS CodePipeline to retrieve the latest code from GitHub (via AWS CodeConnections) in response to branch updates and a weekly Amazon EventBridge schedule. You can change this frequency in the AWS CloudFormation parameter <code>EcrCronExpression</code> when you create or update the stack.</p>
 </li>
 <li>
 <p>AWS CodeBuild, which CodePipeline uses to build a new container image. CodePipeline then uploads the new container image to Amazon Elastic Container Registry (Amazon ECR).</p>

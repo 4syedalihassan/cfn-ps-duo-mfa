@@ -53,8 +53,10 @@ Metadata:
           - EcrRepoName
           - EcrImageRetention
           - EcrCronExpression
-          - CodeCommitRepoName
-          - CodeCommitBranchName
+          - GitHubOwner
+          - GitHubRepo
+          - GitHubBranch
+          - GitHubConnectionArn
           - NotificationEmail
           - DuoMaxCapacity
       - Label:
@@ -124,10 +126,14 @@ Metadata:
         default: ECR Repo Name
       EcrImageRetention:
         default: ECR Retention Period
-      CodeCommitRepoName:
-        default: CodeCommit Repo Name
-      CodeCommitBranchName:
-        default: CodeCommit Branch Name
+      GitHubOwner:
+        default: GitHub owner
+      GitHubRepo:
+        default: GitHub repository
+      GitHubBranch:
+        default: GitHub branch
+      GitHubConnectionArn:
+        default: CodeConnections connection ARN
       NotificationEmail:
         default: Duo Administrator Email
 Parameters:
@@ -303,16 +309,26 @@ Parameters:
     ConstraintDescription: 'Must be in the range [30-600].'
     MinValue: 30
     MaxValue: 600
-  CodeCommitRepoName:
+  GitHubOwner:
     Type: String
-    Description: CodeCommit Repo Name which will manage all the code base
-    Default: duo-authproxy
-    AllowedPattern: "^[0-9a-zA-Z-/]*$"
-  CodeCommitBranchName: 
+    Description: GitHub organization or user name that owns the repository used as the CodePipeline source.
+    Default: ''
+    AllowedPattern: "^$|^[A-Za-z0-9](?:-?[A-Za-z0-9]){0,38}$"
+  GitHubRepo:
     Type: String
-    Description: CodeCommit Branch name where all the code base is located. This will act as a trigger to CodePipeline.
-    Default: ecr
-    AllowedPattern: "^[0-9a-zA-Z-/]*$"
+    Description: GitHub repository name used as the CodePipeline source.
+    Default: cfn-ps-duo-mfa
+    AllowedPattern: "^[A-Za-z0-9_.-]+$"
+  GitHubBranch:
+    Type: String
+    Description: GitHub branch name used as the CodePipeline source.
+    Default: main
+    AllowedPattern: "^[0-9A-Za-z._/-]+$"
+  GitHubConnectionArn:
+    Type: String
+    Description: AWS CodeConnections connection ARN for GitHub (for example, arn:aws:codeconnections:region:account-id:connection/connection-id).
+    Default: ''
+    AllowedPattern: "^$|^arn:[A-Za-z0-9-]+:codeconnections:[A-Za-z0-9-]+:[0-9]{12}:connection/[A-Za-z0-9-]+$"
 
   NotificationEmail:
     Type: String
@@ -431,6 +447,8 @@ Resources:
         AdminArn: !Ref AdminArn
         EcrRepoName: !Ref EcrRepoName
         EcrImageRetention: !Ref EcrImageRetention
-        CodeCommitRepoName: !Ref CodeCommitRepoName
-        CodeCommitBranchName: !Ref CodeCommitBranchName
+        GitHubOwner: !Ref GitHubOwner
+        GitHubRepo: !Ref GitHubRepo
+        GitHubBranch: !Ref GitHubBranch
+        GitHubConnectionArn: !Ref GitHubConnectionArn
         DuoMaxCapacity: !Ref DuoMaxCapacity

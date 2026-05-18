@@ -14,7 +14,7 @@ best practices, to provide you with your own virtual network on AWS.*
 ** In the public subnets, managed network address translation (NAT) gateways to allow outbound internet access for resources in the private subnets.*
 ** A serverless managed AWS Fargate cluster with containers for Duo Authentication Proxy. The cluster is replaced whenever a new image is deployed or whenever the secrets are updated.
 * A continuous integration and continuous delivery (CI/CD) pipeline for image deployment: 
-** AWS CodePipeline to retrieve the latest code from AWS CodeCommit in response to an Amazon CloudWatch event once a week. You can change this frequency in the AWS CloudFormation parameter `EcrCronExpression` when you create or update the stack.
+** AWS CodePipeline to retrieve the latest code from GitHub (via AWS CodeConnections) in response to branch updates and a weekly Amazon EventBridge schedule. You can change this frequency in the AWS CloudFormation parameter `EcrCronExpression` when you create or update the stack.
 ** AWS CodeBuild, which CodePipeline uses to build a new container image. CodePipeline then uploads the new container image to Amazon Elastic Container Registry (Amazon ECR).
 * Image discovery:
 ** Amazon ECR, which is configured to scan on push. Amazon ECR stores each new container image. CodeBuild jobs can wait for the results of the scan before completing. 

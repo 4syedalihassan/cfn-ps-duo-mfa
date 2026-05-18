@@ -10,10 +10,11 @@ The original AWS Quick Start was deprecated in Q4 2024. AWS stopped maintaining 
 
 | Component | Change |
 |-----------|--------|
-| Base image | `amazonlinux:latest` (Docker Hub, rate-limited) → `public.ecr.aws/ubuntu/ubuntu:22.04` (ECR Public) |
+| Runtime base image | `amazonlinux:latest` (Docker Hub, rate-limited) → `public.ecr.aws/amazonlinux/amazonlinux:2023` (ECR Public) |
+| Automation base images | `public.ecr.aws/codebuild/amazonlinux2-x86_64-standard:4.0` → `public.ecr.aws/codebuild/amazonlinux2-x86_64-standard:5.0` |
 | CVE-2026-27459 | pyOpenSSL upgraded to 26.0.0 inside Duo's bundled Python |
-| Source control | CodeCommit (deprecated) → GitHub via AWS CodeConnections |
-| buildspec.yaml | Removed `cd docker/` — files now at repo root |
+| Source control | CodeCommit (deprecated by AWS) → GitHub via AWS CodeConnections |
+| buildspec.yaml | Removed `cd docker/` — pipeline now builds from `scripts/source` root |
 | run_duo.sh | Windows line endings cleaned, original Duo logic preserved |
 | CF template | Updated parameters, pipeline source, IAM permissions |
 
@@ -28,11 +29,11 @@ The original AWS Quick Start was deprecated in Q4 2024. AWS stopped maintaining 
 ## Repository structure
 
 ```
-├── Dockerfile          # Ubuntu 22.04, Duo authproxy, CVE fix
-├── run_duo.sh          # Reads DuoSecret env var, writes authproxy.cfg
-├── buildspec.yaml      # CodeBuild pipeline — build, scan, push to ECR
+├── scripts/source/docker/Dockerfile   # Amazon Linux 2023, Duo authproxy, CVE fix
+├── scripts/source/docker/run_duo.sh   # Reads DuoSecret env var, writes authproxy.cfg
+├── scripts/source/buildspec.yaml      # CodeBuild pipeline — build, scan, push to ECR
 └── templates/
-    └── duo-proxy-fargate.template.yaml   # Main CFN template
+    └── duo-proxy-fargate-main.template.yaml   # Main CFN template
 ```
 
 ## Deployment
@@ -51,13 +52,23 @@ The original AWS Quick Start was deprecated in Q4 2024. AWS stopped maintaining 
 - AWS Console → Developer Tools → Connections → Create connection
 - Select GitHub → Authorize → Save
 - Copy the Connection ARN
+- This authorization step is manual and one-time; CloudFormation does not create or authorize the GitHub connection.
 
 **3. Deploy CloudFormation stack**
-- Upload `templates/duo-proxy-fargate.template.yaml`
-- Fill in parameters:
+
+**For new Active Directory:**
+- Deploy `templates/quickstart-duo-mfa-main.template.yaml`
+- This creates a new VPC, AWS Managed Active Directory, and Fargate deployment
+- Provide the AD/VPC parameters requested by that template
+
+**For existing Active Directory:**
+- Deploy `templates/duo-proxy-fargate.template.yaml`
+- This uses your existing Directory Service (AD Connector or Managed AD)
+- Use the parameters below:
 
 | Parameter | Value |
 |-----------|-------|
+| `GitHubOwner` | GitHub organization or username that owns your target repo (replace example with your value, e.g., `your-github-username`) |
 | `GitHubRepo` | `cfn-ps-duo-mfa` |
 | `GitHubBranch` | `main` |
 | `GitHubConnectionArn` | ARN from step 2 |
@@ -83,9 +94,23 @@ The original AWS Quick Start was deprecated in Q4 2024. AWS stopped maintaining 
 
 ## Updating
 
-Push to `main` branch → CodePipeline auto-triggers → new image built and scanned → ECS auto-deploys.
+Push to the configured `GitHubBranch` branch → CodePipeline auto-triggers → new image built and scanned → ECS auto-deploys.
 
 Weekly rebuild also runs every Saturday to pick up base image patches.
+
+## Host the HTML deployment guide on GitHub Pages
+
+This repository includes a GitHub Actions workflow (`.github/workflows/deploy-pages.yml`) that publishes:
+- `index.html`
+- `docs/deployment_guide/images/*`
+
+To enable publishing:
+1. Go to **Settings** → **Pages**.
+2. Under **Build and deployment**, set **Source** to **GitHub Actions**.
+3. Push to `main` (or run the workflow manually).
+
+Your guide will be available at:
+- `https://<github-username-or-org>.github.io/cfn-ps-duo-mfa/`
 
 ## Troubleshooting
 
