@@ -52,6 +52,7 @@ The original AWS Quick Start was deprecated in Q4 2024. AWS stopped maintaining 
 - AWS Console → Developer Tools → Connections → Create connection
 - Select GitHub → Authorize → Save
 - Copy the Connection ARN
+- This authorization step is manual and one-time; CloudFormation does not create or authorize the GitHub connection.
 
 **3. Deploy CloudFormation stack**
 
@@ -96,6 +97,20 @@ The original AWS Quick Start was deprecated in Q4 2024. AWS stopped maintaining 
 Push to the configured `GitHubBranch` branch → CodePipeline auto-triggers → new image built and scanned → ECS auto-deploys.
 
 Weekly rebuild also runs every Saturday to pick up base image patches.
+
+## Host the HTML deployment guide on GitHub Pages
+
+This repository includes a GitHub Actions workflow (`.github/workflows/deploy-pages.yml`) that publishes:
+- `index.html`
+- `docs/deployment_guide/images/*`
+
+To enable publishing:
+1. Go to **Settings** → **Pages**.
+2. Under **Build and deployment**, set **Source** to **GitHub Actions**.
+3. Push to `main` (or run the workflow manually).
+
+Your guide will be available at:
+- `https://<github-username-or-org>.github.io/cfn-ps-duo-mfa/`
 
 ## Troubleshooting
 
